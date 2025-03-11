@@ -1,23 +1,22 @@
 # robots.txt for Worldmap Quiz
+# TEMPORARY: Block all search engines until the app is ready for public launch
 
 User-agent: *
-# Allow public game content
-Allow: /
-Allow: /svg/world-map.svg
-Allow: /favicon.ico
+Disallow: /
 
-# Disallow internal files and personal information
-Disallow: /assets/
-Disallow: /components/
-Disallow: /.nuxt/
-Disallow: /.output/
-Disallow: /node_modules/
-Disallow: /README.md
-Disallow: /CLAUDE.md
-Disallow: /package.json
-Disallow: /package-lock.json
-Disallow: /tsconfig.json
-Disallow: /nuxt.config.ts
-
-# Hide your name from search engines
-Noindex: /README.md
+# When ready to launch, replace with:
+# User-agent: *
+# Allow: /
+# Allow: /svg/world-map.svg
+# Allow: /favicon.ico
+# Disallow: /assets/
+# Disallow: /components/
+# Disallow: /.nuxt/
+# Disallow: /.output/
+# Disallow: /node_modules/
+# Disallow: /README.md
+# Disallow: /CLAUDE.md
+# Disallow: /package.json
+# Disallow: /package-lock.json
+# Disallow: /tsconfig.json
+# Disallow: /nuxt.config.ts

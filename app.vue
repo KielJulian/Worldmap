@@ -108,6 +108,13 @@
 import { ref, onUnmounted, onMounted } from 'vue';
 import WorldMap from './components/WorldMap.vue';
 
+// Add a meta tag to prevent search engines from indexing the site during development
+useHead({
+  meta: [
+    { name: 'robots', content: 'noindex, nofollow' }
+  ]
+});
+
 // Game state
 const isGameActive = ref(false);
 const timeElapsed = ref(0); // Time elapsed in seconds
