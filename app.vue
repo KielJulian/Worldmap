@@ -392,6 +392,7 @@ onUnmounted(() => {
 </script>
 
 <style>
+/* Main layout */
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -399,21 +400,12 @@ onUnmounted(() => {
   font-family: Arial, sans-serif;
 }
 
-@media (max-width: 768px) {
-  .app-container {
-    padding: var(--spacing-sm);
-  }
-  
-  h1 {
-    font-size: 1.5rem;
-  }
-}
-
 header {
   text-align: center;
   margin-bottom: var(--spacing-xl);
 }
 
+/* Game information section */
 .game-info {
   display: flex;
   justify-content: space-between;
@@ -427,12 +419,7 @@ header {
   color: var(--color-text-primary);
 }
 
-@media (max-width: 480px) {
-  .timer, .score {
-    font-size: 1.2rem;
-  }
-}
-
+/* Map container */
 .map-container {
   width: 100%;
   height: 500px;
@@ -441,18 +428,6 @@ header {
   position: relative;
   margin-bottom: var(--spacing-md);
   background-color: var(--gray-2);
-}
-
-@media (max-width: 768px) {
-  .map-container {
-    height: 400px;
-  }
-}
-
-@media (max-width: 480px) {
-  .map-container {
-    height: 300px;
-  }
 }
 
 .game-overlay {
@@ -468,13 +443,25 @@ header {
   border-radius: var(--border-radius-sm);
 }
 
+/* Answer input section */
 .answer-section {
   margin-top: var(--spacing-md);
+}
+
+.input-group {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.autocomplete {
+  position: relative;
+  flex-grow: 1;
 }
 
 .answer-input {
   flex-grow: 1;
   padding: var(--spacing-md);
+  width: 100%;
   font-size: 1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
@@ -489,114 +476,11 @@ header {
   box-shadow: 0 0 0 2px var(--blue-1);
 }
 
-.btn {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: 1rem;
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  border: none;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.btn:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.btn-secondary {
-  background-color: var(--color-secondary);
-  color: var(--color-secondary-text);
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-secondary-dark);
-}
-
-.input-group {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
 .skip-btn {
   flex-shrink: 0;
 }
 
-.feedback {
-  padding: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  text-align: center;
-  font-weight: bold;
-}
-
-.feedback.correct {
-  background-color: var(--green-1);
-  color: var(--green-9);
-}
-
-.feedback.incorrect {
-  background-color: var(--red-1);
-  color: var(--red-9);
-}
-
-.feedback.neutral {
-  background-color: var(--gray-2);
-  color: var(--gray-8);
-}
-
-.game-stats {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-lg);
-  background-color: var(--color-background);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
-}
-
-.game-stats h2 {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-  color: var(--color-text-primary);
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--spacing-lg);
-}
-
-.stat-item {
-  text-align: center;
-  padding: var(--spacing-md);
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-sm);
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.mt-4 {
-  margin-top: var(--spacing-xl);
-}
-
-/* Autocomplete Dropdown */
-.autocomplete {
-  position: relative;
-  flex-grow: 1;
-}
-
+/* Suggestion dropdown */
 .suggestions {
   position: absolute;
   top: 100%;
@@ -622,7 +506,56 @@ header {
   background-color: var(--gray-1);
 }
 
-/* Game Summary Overlay */
+/* Feedback messages */
+.feedback {
+  padding: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  font-weight: bold;
+}
+
+.feedback.correct {
+  background-color: var(--green-1);
+  color: var(--green-9);
+}
+
+.feedback.incorrect {
+  background-color: var(--red-1);
+  color: var(--red-9);
+}
+
+.feedback.neutral {
+  background-color: var(--gray-2);
+  color: var(--gray-8);
+}
+
+/* Buttons */
+.btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-secondary-dark);
+}
+
+/* Game summary popup */
 .game-summary-overlay {
   position: fixed;
   top: 0;
@@ -647,12 +580,6 @@ header {
   box-shadow: var(--shadow-lg);
 }
 
-.game-summary h2 {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-  color: var(--color-text-primary);
-}
-
 .summary-time {
   font-size: 2rem;
   text-align: center;
@@ -661,14 +588,9 @@ header {
   color: var(--color-primary);
 }
 
+/* Country attempts section */
 .country-attempts-list {
   margin-bottom: var(--spacing-xl);
-}
-
-.country-attempts-list h3 {
-  margin-bottom: var(--spacing-md);
-  text-align: center;
-  color: var(--color-text-primary);
 }
 
 .country-attempt {
@@ -703,6 +625,7 @@ header {
   color: var(--red-9);
 }
 
+/* Summary stats */
 .summary-stats {
   display: flex;
   justify-content: space-around;
@@ -717,5 +640,42 @@ header {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--color-primary);
+}
+
+.game-summary h2,
+.country-attempts-list h3 {
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+/* Utility classes */
+.mt-4 {
+  margin-top: var(--spacing-xl);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .app-container {
+    padding: var(--spacing-sm);
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .map-container {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timer, .score {
+    font-size: 1.2rem;
+  }
+  
+  .map-container {
+    height: 300px;
+  }
 }
 </style>
