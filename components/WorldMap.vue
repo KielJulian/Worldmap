@@ -126,23 +126,23 @@ defineExpose({
 }
 
 :deep(.country) {
-  fill: #eee;
-  stroke: #888;
+  fill: var(--color-country-default);
+  stroke: var(--gray-6);
   stroke-width: 1;
   cursor: pointer;
   transition: fill 0.3s ease;
 }
 
 :deep(.country:hover) {
-  fill: #ddd;
+  fill: var(--color-country-hover);
 }
 
 :deep(.country.highlighted) {
-  stroke: #3498db;
+  stroke: var(--color-country-highlighted);
   stroke-width: 2;
 }
 
 :deep(.country.correct) {
-  fill: #2ecc71;
+  fill: var(--color-country-correct);
 }
 </style>

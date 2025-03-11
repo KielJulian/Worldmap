@@ -1,15 +1,133 @@
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2ecc71;
-  --background-color: #f8f9fa;
-  --text-color: #333;
-  --border-color: #ddd;
+  /* Color Palettes - from lightest (0) to darkest (10) */
+  
+  /* Gray Scale */
+  --gray-0: #ffffff;
+  --gray-1: #f8f9fa;
+  --gray-2: #e9ecef;
+  --gray-3: #dee2e6;
+  --gray-4: #ced4da;
+  --gray-5: #adb5bd;
+  --gray-6: #6c757d;
+  --gray-7: #495057;
+  --gray-8: #343a40;
+  --gray-9: #212529;
+  --gray-10: #000000;
+  
+  /* Blue Scale - Primary */
+  --blue-0: #e3f2fd;
+  --blue-1: #bbdefb;
+  --blue-2: #90caf9;
+  --blue-3: #64b5f6;
+  --blue-4: #42a5f5;
+  --blue-5: #2196f3;
+  --blue-6: #1e88e5;
+  --blue-7: #1976d2;
+  --blue-8: #1565c0;
+  --blue-9: #0d47a1;
+  --blue-10: #0a3880;
+  
+  /* Green Scale - Success */
+  --green-0: #e8f5e9;
+  --green-1: #c8e6c9;
+  --green-2: #a5d6a7;
+  --green-3: #81c784;
+  --green-4: #66bb6a;
+  --green-5: #4caf50;
+  --green-6: #43a047;
+  --green-7: #388e3c;
+  --green-8: #2e7d32;
+  --green-9: #1b5e20;
+  --green-10: #0d3b0d;
+  
+  /* Red Scale - Error */
+  --red-0: #ffebee;
+  --red-1: #ffcdd2;
+  --red-2: #ef9a9a;
+  --red-3: #e57373;
+  --red-4: #ef5350;
+  --red-5: #f44336;
+  --red-6: #e53935;
+  --red-7: #d32f2f;
+  --red-8: #c62828;
+  --red-9: #b71c1c;
+  --red-10: #7f0000;
+  
+  /* Yellow Scale - Warning */
+  --yellow-0: #fffde7;
+  --yellow-1: #fff9c4;
+  --yellow-2: #fff59d;
+  --yellow-3: #fff176;
+  --yellow-4: #ffee58;
+  --yellow-5: #ffeb3b;
+  --yellow-6: #fdd835;
+  --yellow-7: #fbc02d;
+  --yellow-8: #f9a825;
+  --yellow-9: #f57f17;
+  --yellow-10: #cc6600;
+
+  /* Component Semantic Variables */
+  --color-background: var(--gray-1);
+  --color-surface: var(--gray-0);
+  --color-border: var(--gray-3);
+  --color-text-primary: var(--gray-9);
+  --color-text-secondary: var(--gray-7);
+  --color-text-disabled: var(--gray-6);
+  
+  --color-primary: var(--blue-6);
+  --color-primary-light: var(--blue-4);
+  --color-primary-dark: var(--blue-8);
+  --color-primary-text: var(--gray-0);
+  
+  --color-secondary: var(--gray-6);
+  --color-secondary-light: var(--gray-5);
+  --color-secondary-dark: var(--gray-7);
+  --color-secondary-text: var(--gray-0);
+  
+  --color-success: var(--green-6);
+  --color-success-light: var(--green-4);
+  --color-success-dark: var(--green-8);
+  --color-success-text: var(--gray-0);
+  
+  --color-error: var(--red-6);
+  --color-error-light: var(--red-4);
+  --color-error-dark: var(--red-8);
+  --color-error-text: var(--gray-0);
+  
+  --color-warning: var(--yellow-6);
+  --color-warning-light: var(--yellow-4);
+  --color-warning-dark: var(--yellow-8);
+  --color-warning-text: var(--gray-9);
+  
+  /* Game-specific variables */
+  --color-country-default: var(--gray-2);
+  --color-country-hover: var(--gray-3);
+  --color-country-highlighted: var(--blue-6);
+  --color-country-correct: var(--green-4);
+  
+  /* Spacing variables */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* Border radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  
+  /* Box shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
 }
