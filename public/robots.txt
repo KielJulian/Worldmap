@@ -1,1 +1,23 @@
+# robots.txt for Worldmap Quiz
 
+User-agent: *
+# Allow public game content
+Allow: /
+Allow: /svg/world-map.svg
+Allow: /favicon.ico
+
+# Disallow internal files and personal information
+Disallow: /assets/
+Disallow: /components/
+Disallow: /.nuxt/
+Disallow: /.output/
+Disallow: /node_modules/
+Disallow: /README.md
+Disallow: /CLAUDE.md
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /tsconfig.json
+Disallow: /nuxt.config.ts
+
+# Hide your name from search engines
+Noindex: /README.md

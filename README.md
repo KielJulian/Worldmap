@@ -64,4 +64,4 @@ MIT
 
 ---
 
-Created by Julian Kiel
+Created by J.K.
