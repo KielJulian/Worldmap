@@ -4,11 +4,6 @@
       <h1>World Map Quiz</h1>
     </header>
     <main>
-      <div class="game-info">
-        <div class="timer">Time: {{ formatTime(timeElapsed) }}</div>
-        <div class="score">Score: {{ score }}</div>
-      </div>
-
       <div class="map-container">
         <WorldMap 
           ref="worldMapRef"
@@ -19,44 +14,51 @@
         <div v-if="!isGameActive" class="game-overlay">
           <button @click="startGame" class="btn btn-primary">Start Game</button>
         </div>
-      </div>
-
-      <div class="answer-section">
-        <div class="input-group">
-          <div class="autocomplete">
-            <input 
-              v-model="userAnswer" 
-              @input="updateSuggestions"
-              @keyup.enter="checkAnswer"
-              @keyup.down="navigateSuggestion(1)"
-              @keyup.up="navigateSuggestion(-1)"
-              placeholder="Type country name..."
-              class="answer-input"
-              :disabled="!isGameActive"
-            />
-            <div v-if="countrySuggestions.length > 0 && isGameActive" class="suggestions">
-              <div 
-                v-for="(suggestion, index) in countrySuggestions" 
-                :key="index"
-                @click="selectSuggestion(suggestion)"
-                class="suggestion-item"
-                :class="{ 'suggestion-active': index === activeSuggestionIndex }"
-              >
-                {{ suggestion.charAt(0).toUpperCase() + suggestion.slice(1) }}
+        
+        <!-- Game indicators and input over the map -->
+        <div v-if="isGameActive" class="game-info">
+          <div class="timer">Time: {{ formatTime(timeElapsed) }}</div>
+          <div class="score">Score: {{ score }}</div>
+        </div>
+        
+        <!-- Answer input inside map container -->
+        <div v-if="isGameActive" class="answer-popup">
+          <div class="input-group">
+            <div class="autocomplete">
+              <input 
+                v-model="userAnswer" 
+                @input="updateSuggestions"
+                @keyup.enter="checkAnswer"
+                @keyup.down="navigateSuggestion(1)"
+                @keyup.up="navigateSuggestion(-1)"
+                placeholder="Type country name..."
+                class="answer-input"
+                :disabled="!isGameActive"
+                autofocus
+              />
+              <div v-if="countrySuggestions.length > 0 && isGameActive" class="suggestions">
+                <div 
+                  v-for="(suggestion, index) in countrySuggestions" 
+                  :key="index"
+                  @click="selectSuggestion(suggestion)"
+                  class="suggestion-item"
+                  :class="{ 'suggestion-active': index === activeSuggestionIndex }"
+                >
+                  {{ suggestion.charAt(0).toUpperCase() + suggestion.slice(1) }}
+                </div>
               </div>
             </div>
+            <button 
+              @click="skipCountry" 
+              class="btn btn-secondary skip-btn"
+              title="Skip this country (no penalty)"
+            >
+              Skip
+            </button>
           </div>
-          <button 
-            v-if="isGameActive" 
-            @click="skipCountry" 
-            class="btn btn-secondary skip-btn"
-            title="Skip this country (no penalty)"
-          >
-            Skip
-          </button>
-        </div>
-        <div v-if="feedback" class="feedback" :class="feedbackClass">
-          {{ feedback }}
+          <div v-if="feedback" class="feedback" :class="feedbackClass">
+            {{ feedback }}
+          </div>
         </div>
       </div>
       
@@ -105,13 +107,14 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted, onMounted } from 'vue';
+import { ref, onUnmounted, onMounted, watchEffect } from 'vue';
 import WorldMap from './components/WorldMap.vue';
 
 // Add a meta tag to prevent search engines from indexing the site during development
 useHead({
   meta: [
-    { name: 'robots', content: 'noindex, nofollow' }
+    { name: 'robots', content: 'noindex, nofollow' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' }
   ]
 });
 
@@ -211,6 +214,12 @@ function handleCountrySelect(countryId) {
 const worldMapRef = ref(null);
 const countryMap = ref({});
 
+// Function removed to improve performance
+function focusOnCountry(countryId) {
+  // No longer zooming for performance reasons
+  return;
+}
+
 // Select a random country for the player to guess
 function selectRandomCountry() {
   // Get countries that haven't been guessed yet
@@ -227,6 +236,7 @@ function selectRandomCountry() {
   const randomIndex = Math.floor(Math.random() * availableCountries.length);
   currentCountry.value = availableCountries[randomIndex];
   currentCountryAttempts.value = 0; // Reset attempts for the new country
+  
   console.log('New country to guess:', currentCountry.value, countryMap.value[currentCountry.value]);
 }
 
@@ -375,59 +385,113 @@ function skipCountry() {
   }, 2000);
 }
 
+// Watch for country changes
+watchEffect(() => {
+  // No longer focusing on country with zoom to improve performance
+});
+
 // Initialize map data on component mount
 onMounted(() => {
   // Wait for the world map component to load
   setTimeout(() => {
     initCountryMap();
   }, 500);
+  
+  // Handle screen orientation changes on mobile
+  window.addEventListener('resize', handleResize);
+  handleResize();
 });
+
+// Handle window resize events
+function handleResize() {
+  // Adjust for mobile
+  if (window.innerWidth <= 768) {
+    // Mobile-specific adjustments
+    document.documentElement.style.setProperty('--map-height', '50vh');
+  } else {
+    // Desktop
+    document.documentElement.style.setProperty('--map-height', '70vh');
+  }
+  
+  // No longer focusing on countries for performance
+}
 
 // Clean up on component unmount
 onUnmounted(() => {
   if (timerInterval) {
     clearInterval(timerInterval);
   }
+  window.removeEventListener('resize', handleResize);
 });
 </script>
 
 <style>
-/* Main layout */
+/* Main layout - fullscreen dark theme */
 .app-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-md);
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   font-family: Arial, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  overflow: hidden;
 }
 
 header {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--color-primary);
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
 
 /* Game information section */
 .game-info {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--spacing-md);
-  flex-wrap: wrap;
+  padding: var(--spacing-sm) var(--spacing-md);
+  z-index: 4;
 }
 
 .timer, .score {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   color: var(--color-text-primary);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  backdrop-filter: blur(4px);
 }
 
 /* Map container */
 .map-container {
+  flex: 1;
   width: 100%;
-  height: 500px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
+  height: var(--map-height, 70vh);
   position: relative;
-  margin-bottom: var(--spacing-md);
-  background-color: var(--gray-2);
+  background-color: var(--color-background);
+  overflow: hidden;
 }
 
 .game-overlay {
@@ -439,13 +503,23 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: var(--border-radius-sm);
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10;
 }
 
 /* Answer input section */
-.answer-section {
-  margin-top: var(--spacing-md);
+.answer-popup {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 600px;
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 5;
 }
 
 .input-group {
@@ -459,13 +533,11 @@ header {
 }
 
 .answer-input {
-  flex-grow: 1;
-  padding: var(--spacing-md);
   width: 100%;
+  padding: var(--spacing-md);
   font-size: 1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-md);
   color: var(--color-text-primary);
   background-color: var(--color-surface);
 }
@@ -473,7 +545,7 @@ header {
 .answer-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--blue-1);
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
 }
 
 .skip-btn {
@@ -492,7 +564,7 @@ header {
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-md);
-  z-index: 10;
+  z-index: 20;
 }
 
 .suggestion-item {
@@ -503,7 +575,7 @@ header {
 
 .suggestion-item:hover,
 .suggestion-active {
-  background-color: var(--gray-1);
+  background-color: var(--gray-8);
 }
 
 /* Feedback messages */
@@ -516,18 +588,18 @@ header {
 }
 
 .feedback.correct {
-  background-color: var(--green-1);
-  color: var(--green-9);
+  background-color: rgba(67, 160, 71, 0.2);
+  color: var(--green-3);
 }
 
 .feedback.incorrect {
-  background-color: var(--red-1);
-  color: var(--red-9);
+  background-color: rgba(229, 57, 53, 0.2);
+  color: var(--red-3);
 }
 
 .feedback.neutral {
-  background-color: var(--gray-2);
-  color: var(--gray-8);
+  background-color: rgba(33, 33, 33, 0.2);
+  color: var(--gray-3);
 }
 
 /* Buttons */
@@ -562,7 +634,7 @@ header {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -611,18 +683,18 @@ header {
 }
 
 .country-attempt-count.perfect {
-  background-color: var(--green-1);
-  color: var(--green-9);
+  background-color: rgba(67, 160, 71, 0.2);
+  color: var(--green-3);
 }
 
 .country-attempt-count.good {
-  background-color: var(--yellow-1);
-  color: var(--yellow-9);
+  background-color: rgba(253, 216, 53, 0.2);
+  color: var(--yellow-3);
 }
 
 .country-attempt-count.challenging {
-  background-color: var(--red-1);
-  color: var(--red-9);
+  background-color: rgba(229, 57, 53, 0.2);
+  color: var(--red-3);
 }
 
 /* Summary stats */
@@ -656,26 +728,51 @@ header {
 
 /* Responsive styles */
 @media (max-width: 768px) {
-  .app-container {
+  header h1 {
+    font-size: 1.4rem;
+  }
+  
+  .game-info {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .timer, .score {
+    font-size: 1rem;
+  }
+  
+  .answer-input {
     padding: var(--spacing-sm);
   }
   
-  h1 {
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+  
+  .game-summary {
+    padding: var(--spacing-md);
+    width: 95%;
+  }
+  
+  .summary-time {
     font-size: 1.5rem;
   }
   
-  .map-container {
-    height: 400px;
+  .answer-popup {
+    width: 90%;
+    bottom: 6%;
+    padding: var(--spacing-sm);
   }
 }
 
-@media (max-width: 480px) {
-  .timer, .score {
-    font-size: 1.2rem;
+/* Fix for touch devices */
+@media (hover: none) {
+  .suggestion-item:hover {
+    background-color: transparent;
   }
   
-  .map-container {
-    height: 300px;
+  .suggestion-item:active {
+    background-color: var(--gray-8);
   }
 }
 </style>

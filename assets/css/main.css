@@ -1,7 +1,7 @@
 :root {
   /* Color Palettes - from lightest (0) to darkest (10) */
   
-  /* Gray Scale */
+  /* Gray Scale - Dark Theme */
   --gray-0: #ffffff;
   --gray-1: #f8f9fa;
   --gray-2: #e9ecef;
@@ -66,17 +66,17 @@
   --yellow-9: #f57f17;
   --yellow-10: #cc6600;
 
-  /* Component Semantic Variables */
-  --color-background: var(--gray-1);
-  --color-surface: var(--gray-0);
-  --color-border: var(--gray-3);
-  --color-text-primary: var(--gray-9);
-  --color-text-secondary: var(--gray-7);
-  --color-text-disabled: var(--gray-6);
+  /* Dark Theme Component Variables */
+  --color-background: var(--gray-10);
+  --color-surface: var(--gray-9);
+  --color-border: var(--gray-7);
+  --color-text-primary: var(--gray-0);
+  --color-text-secondary: var(--gray-2);
+  --color-text-disabled: var(--gray-5);
   
-  --color-primary: var(--blue-6);
-  --color-primary-light: var(--blue-4);
-  --color-primary-dark: var(--blue-8);
+  --color-primary: var(--blue-5);
+  --color-primary-light: var(--blue-3);
+  --color-primary-dark: var(--blue-7);
   --color-primary-text: var(--gray-0);
   
   --color-secondary: var(--gray-6);
@@ -85,25 +85,25 @@
   --color-secondary-text: var(--gray-0);
   
   --color-success: var(--green-6);
-  --color-success-light: var(--green-4);
+  --color-success-light: var(--green-5);
   --color-success-dark: var(--green-8);
   --color-success-text: var(--gray-0);
   
   --color-error: var(--red-6);
-  --color-error-light: var(--red-4);
+  --color-error-light: var(--red-5);
   --color-error-dark: var(--red-8);
   --color-error-text: var(--gray-0);
   
   --color-warning: var(--yellow-6);
-  --color-warning-light: var(--yellow-4);
+  --color-warning-light: var(--yellow-5);
   --color-warning-dark: var(--yellow-8);
-  --color-warning-text: var(--gray-9);
+  --color-warning-text: var(--gray-0);
   
-  /* Game-specific variables */
-  --color-country-default: var(--gray-2);
-  --color-country-hover: var(--gray-3);
-  --color-country-highlighted: var(--blue-6);
-  --color-country-correct: var(--green-4);
+  /* Game-specific variables - Dark Theme */
+  --color-country-default: var(--gray-8);
+  --color-country-hover: var(--gray-7);
+  --color-country-highlighted: var(--blue-5);
+  --color-country-correct: var(--green-5);
   
   /* Spacing variables */
   --spacing-xs: 0.25rem;
@@ -118,16 +118,25 @@
   --border-radius-md: 8px;
   --border-radius-lg: 16px;
   
-  /* Box shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  /* Box shadows - Dark Theme */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.8);
 }
 
-body {
+/* Apply dark theme to full page */
+html, body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background-color: var(--color-background);
   color: var(--color-text-primary);
+}
+
+#__nuxt {
+  height: 100%;
+  width: 100%;
 }
