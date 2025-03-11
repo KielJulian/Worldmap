@@ -1,75 +1,67 @@
-# Nuxt Minimal Starter
+# World Map Quiz
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+An interactive quiz game that tests your knowledge of world geography by identifying countries on a world map.
+
+![World Map Quiz](https://i.imgur.com/placeholder.png)
+
+## Features
+
+- Interactive world map with country highlighting
+- Auto-suggest dropdown as you type country names
+- Track attempts per country
+- Real-time score tracking
+- Game completion summary with statistics
+- Timer to track how long it takes to complete the quiz
+- Responsive design that works on desktop and mobile
+
+## Technologies Used
+
+- Vue.js 3 with Composition API
+- Nuxt 3 framework
+- SVG for the interactive map
+- CSS3 for styling
 
 ## Setup
 
 Make sure to install dependencies:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
 ## Development Server
 
-Start the development server on `http://localhost:3000`:
+Start the development server:
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+## How to Play
 
-Build the application for production:
+1. Click the "Start Game" button to begin
+2. The outline of a country will be highlighted on the map
+3. Type the name of the country in the input field (suggestions will appear as you type)
+4. If you're correct, the country will be filled in and the next country will be highlighted
+5. If you don't know a country, you can click "Skip" to move to the next one
+6. Once you've identified all countries, you'll see a summary of your performance
+
+## Build for Production
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+## Preview Production Build
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## License
+
+MIT
+
+---
+
+Created by Julian Kiel
