@@ -19,7 +19,6 @@
         <!-- Game indicators and input over the map -->
         <div v-if="isGameActive" class="game-info">
           <div class="timer">Time: {{ formatTime(timeElapsed) }}</div>
-          <div class="score">Score: {{ score }}</div>
         </div>
         
         <!-- Answer input inside map container -->
@@ -72,22 +71,25 @@
           </div>
           
           <div class="country-attempts-list">
-            <h3>Attempts Per Country</h3>
-            <div class="country-attempt" v-for="(attempts, id) in countryStats" :key="id">
+            <h3>Country Performance</h3>
+            <div class="country-attempt" 
+                v-for="id in Object.keys(countryStats).sort((a, b) => (countryTimes[a] || 0) - (countryTimes[b] || 0))" 
+                :key="id">
               <div class="country-name">
                 {{ countryMap[id]?.name.charAt(0).toUpperCase() + countryMap[id]?.name.slice(1) }}
               </div>
-              <div class="country-attempt-count" :class="getAttemptsClass(attempts)">
-                {{ attempts }} attempt{{ attempts !== 1 ? 's' : '' }}
+              <div class="country-stats">
+                <div class="country-attempt-count" :class="getAttemptsClass(countryStats[id])">
+                  {{ countryStats[id] }} attempt{{ countryStats[id] !== 1 ? 's' : '' }}
+                </div>
+                <div class="country-time">
+                  {{ formatTime(countryTimes[id] || 0) }}
+                </div>
               </div>
             </div>
           </div>
           
           <div class="summary-stats">
-            <div class="summary-stat">
-              <div class="stat-value">{{ score }}</div>
-              <div class="stat-label">Score</div>
-            </div>
             <div class="summary-stat">
               <div class="stat-value">{{ correctAnswers.length }}</div>
               <div class="stat-label">Countries</div>
@@ -97,6 +99,10 @@
                 Math.round((correctAnswers.length / (countryMap ? Object.keys(countryMap).length : 1)) * 100) 
               }}%</div>
               <div class="stat-label">Completion</div>
+            </div>
+            <div class="summary-stat">
+              <div class="stat-value">{{ formatTime(Object.values(countryTimes).reduce((sum, time) => sum + time, 0)) }}</div>
+              <div class="stat-label">Total Answer Time</div>
             </div>
           </div>
           
@@ -123,7 +129,6 @@ useHead({
 // Game state
 const isGameActive = ref(false);
 const timeElapsed = ref(0); // Time elapsed in seconds
-const score = ref(0);
 const userAnswer = ref('');
 const feedback = ref('');
 const feedbackClass = ref('');
@@ -135,6 +140,8 @@ const countrySuggestions = ref([]); // Dropdown suggestions
 const activeSuggestionIndex = ref(-1); // Index of the active suggestion
 const showGameSummary = ref(false); // Control the end game popup
 const countryStats = ref({}); // Track attempts per country
+const countryTimes = ref({}); // Track time spent on each country in seconds
+const currentCountryStartTime = ref(0); // When the current country was started
 let timerInterval = null;
 
 // Format time as MM:SS
@@ -148,11 +155,12 @@ function formatTime(seconds) {
 function startGame() {
   isGameActive.value = true;
   timeElapsed.value = 0;
-  score.value = 0;
   userAnswer.value = '';
   feedback.value = '';
   correctAnswers.value = [];
   countryStats.value = {};
+  countryTimes.value = {};
+  currentCountryStartTime.value = 0;
   showGameSummary.value = false;
   
   // Make sure country data is initialized
@@ -238,6 +246,7 @@ function selectRandomCountry() {
   const randomIndex = Math.floor(Math.random() * availableCountries.length);
   currentCountry.value = availableCountries[randomIndex];
   currentCountryAttempts.value = 0; // Reset attempts for the new country
+  currentCountryStartTime.value = timeElapsed.value; // Store when this country was presented
   
   console.log('New country to guess:', currentCountry.value, countryMap.value[currentCountry.value]);
 }
@@ -279,11 +288,11 @@ function checkAnswer() {
   const correct = allValidAnswers.includes(answer);
   
   if (correct) {
-    // Award points (no time bonus anymore since we're counting up)
-    const pointsAwarded = 10;
+    // Calculate time spent on this country
+    const timeSpent = timeElapsed.value - currentCountryStartTime.value;
+    countryTimes.value[currentCountry.value] = timeSpent;
     
-    score.value += pointsAwarded;
-    feedback.value = `Correct!`;
+    feedback.value = `Correct! Time: ${formatTime(timeSpent)}`;
     feedbackClass.value = 'correct';
     correctAnswers.value.push(currentCountry.value);
     
@@ -373,6 +382,10 @@ function skipCountry() {
     countryStats.value[currentCountry.value] = 0;
   }
   countryStats.value[currentCountry.value] += 5; // Counting as 5 attempts for a skip
+  
+  // Record time spent
+  const timeSpent = timeElapsed.value - currentCountryStartTime.value;
+  countryTimes.value[currentCountry.value] = timeSpent;
   
   feedback.value = `Skipped. The answer was "${correctName.charAt(0).toUpperCase() + correctName.slice(1)}".`;
   feedbackClass.value = 'neutral';
@@ -682,8 +695,21 @@ main {
   color: var(--color-text-primary);
 }
 
+.country-stats {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
 .country-attempt-count {
   padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.country-time {
+  font-family: monospace;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-text-primary);
+  background-color: rgba(33, 33, 33, 0.2);
   border-radius: var(--border-radius-sm);
 }
 
