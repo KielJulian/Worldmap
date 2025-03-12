@@ -47,6 +47,11 @@
                 autocorrect="off"
                 autocapitalize="none"
                 spellcheck="false"
+                inputmode="text"
+                data-form-type="other"
+                x-webkit-speech="false"
+                webkitAutocorrect="off"
+                mozAutocorrect="off"
                 autofocus
               />
               <input 
