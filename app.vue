@@ -19,13 +19,6 @@
         <!-- Game indicators and input over the map -->
         <div v-if="isGameActive" class="game-info">
           <div class="timer">Time: {{ formatTime(timeElapsed) }}</div>
-          <button 
-            @click="skipCountry" 
-            class="btn btn-secondary skip-btn"
-            title="Skip this country (no penalty)"
-          >
-            Skip
-          </button>
         </div>
         
         <!-- Answer input inside map container -->
@@ -37,9 +30,9 @@
                 v-model="userAnswer" 
                 @input="updateAutocomplete"
                 @keyup.enter="checkAnswer"
-                @keyup.tab.prevent="acceptAutocomplete"
-                @keyup.right="acceptAutocomplete"
-                placeholder="Start typing a country name..."
+                @keydown.tab.prevent="acceptAutocomplete"
+                @keydown.right="acceptAutocomplete"
+                placeholder="Type a country name (or 'skip' to skip)..."
                 class="answer-input"
                 :disabled="!isGameActive"
                 autofocus
@@ -272,6 +265,12 @@ function checkAnswer() {
   
   if (answer.length === 0) return;
   
+  // Check if user wants to skip this country
+  if (answer === 'skip') {
+    skipCountry();
+    return;
+  }
+  
   const country = countryMap.value[currentCountry.value];
   const correctName = country.name;
   const allValidAnswers = [correctName, ...country.alternatives];
@@ -348,8 +347,15 @@ function updateAutocomplete() {
 }
 
 // Accept the autocomplete suggestion
-function acceptAutocomplete() {
-  if (autocompleteText.value && autocompleteText.value.toLowerCase().startsWith(userAnswer.value.toLowerCase())) {
+function acceptAutocomplete(event) {
+  // If we have a valid autocomplete suggestion
+  if (autocompleteText.value && userAnswer.value.length > 0) {
+    // Prevent tab key from changing focus
+    if (event.key === 'Tab') {
+      event.preventDefault();
+    }
+    
+    // Set the user input to the full autocomplete suggestion
     userAnswer.value = autocompleteText.value;
     
     // Position cursor at the end of the input
@@ -357,8 +363,15 @@ function acceptAutocomplete() {
       if (inputRef.value) {
         inputRef.value.selectionStart = userAnswer.value.length;
         inputRef.value.selectionEnd = userAnswer.value.length;
+        inputRef.value.focus();
       }
     }, 0);
+    
+    // Clear the autocomplete suggestion to avoid showing the same text twice
+    autocompleteText.value = '';
+    
+    // Immediately search for a new autocomplete suggestion based on the now-complete word
+    setTimeout(updateAutocomplete, 10);
   }
 }
 
@@ -498,20 +511,6 @@ main {
   backdrop-filter: blur(4px);
 }
 
-.skip-btn {
-  font-weight: bold;
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  background-color: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--color-secondary, #ff5722);
-  transition: all 0.2s ease;
-}
-
-.skip-btn:hover {
-  background-color: var(--color-secondary, #ff5722);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-}
 
 /* Map container */
 .map-container {
@@ -599,7 +598,7 @@ main {
   font-size: 1rem;
   border: 1px solid transparent;
   border-radius: var(--border-radius-sm);
-  color: var(--color-text-secondary, #666);
+  color: var(--color-text-secondary-light, #666);
   background-color: var(--color-surface);
   z-index: 1;
   pointer-events: none;
@@ -778,11 +777,6 @@ main {
   
   .timer, .score {
     font-size: 0.9rem;
-  }
-  
-  .skip-btn {
-    font-size: 0.9rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
   }
   
   .answer-input, .autocomplete-suggestion {
