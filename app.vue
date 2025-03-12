@@ -39,8 +39,10 @@
                 @keyup.enter="checkAnswer"
                 @keydown.tab.prevent="acceptAutocomplete"
                 @keydown.right="acceptAutocomplete"
+                @click="handleInputClick"
                 placeholder="Type a country name (or 'skip' to skip)..."
                 class="answer-input"
+                :class="{ 'has-suggestion': autocompleteText && userAnswer.length > 0 }"
                 :disabled="!isGameActive"
                 autofocus
               />
@@ -353,8 +355,8 @@ function updateAutocomplete() {
 function acceptAutocomplete(event) {
   // If we have a valid autocomplete suggestion
   if (autocompleteText.value && userAnswer.value.length > 0) {
-    // Prevent tab key from changing focus
-    if (event.key === 'Tab') {
+    // Prevent tab key from changing focus if this is a keyboard event
+    if (event && event.key === 'Tab') {
       event.preventDefault();
     }
     
@@ -376,6 +378,21 @@ function acceptAutocomplete(event) {
     // Immediately search for a new autocomplete suggestion based on the now-complete word
     setTimeout(updateAutocomplete, 10);
   }
+}
+
+// Handle clicks on the input field to accept autocomplete on mobile
+function handleInputClick() {
+  // Only accept autocomplete if we're on a touch device and have a suggestion
+  if (autocompleteText.value && userAnswer.value.length > 0 && isTouchDevice()) {
+    acceptAutocomplete();
+  }
+}
+
+// Detect if the device supports touch
+function isTouchDevice() {
+  return ('ontouchstart' in window) || 
+         (navigator.maxTouchPoints > 0) || 
+         (navigator.msMaxTouchPoints > 0);
 }
 
 // Skip current country without penalty
@@ -605,6 +622,26 @@ main {
   background-color: transparent;
   z-index: 1;
   pointer-events: none;
+}
+
+/* Touch indicator styles for mobile devices */
+@media (hover: none) {
+  .input-wrapper {
+    position: relative;
+  }
+  
+  .answer-input {
+    transition: border-color 0.2s;
+  }
+  
+  /* Use a class instead of :has() for better browser support */
+  .answer-input.has-suggestion {
+    border-right: 3px solid var(--color-primary, #2196f3);
+  }
+  
+  .answer-input.has-suggestion:focus {
+    border-right-color: var(--color-primary, #2196f3);
+  }
 }
 
 /* Feedback messages */
