@@ -44,6 +44,10 @@
                 class="answer-input"
                 :class="{ 'has-suggestion': autocompleteText && userAnswer.length > 0 }"
                 :disabled="!isGameActive"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
                 autofocus
               />
               <input 
