@@ -21,6 +21,13 @@
           <div class="timer">Time: {{ formatTime(timeElapsed) }}</div>
         </div>
         
+        <!-- Feedback display above input -->
+        <div v-if="isGameActive && feedback" class="feedback-container">
+          <div class="feedback-above" :class="feedbackClass">
+            {{ feedback }}
+          </div>
+        </div>
+        
         <!-- Answer input inside map container -->
         <div v-if="isGameActive" class="answer-popup">
           <div class="autocomplete">
@@ -45,10 +52,6 @@
                 aria-hidden="true"
               />
             </div>
-          </div>
-          
-          <div v-if="feedback" class="feedback" :class="feedbackClass">
-            {{ feedback }}
           </div>
         </div>
       </div>
@@ -613,8 +616,31 @@ main {
   font-weight: bold;
 }
 
+/* Feedback container - independent of the input field */
+.feedback-container {
+  position: absolute;
+  bottom: calc(10% + 80px); /* Position above the input field */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 600px;
+  z-index: 6;
+}
+
+/* Feedback above input */
+.feedback-above {
+  text-align: center;
+  font-weight: bold;
+  padding: var(--spacing-sm);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
 .feedback.correct {
   background-color: rgba(67, 160, 71, 0.2);
+  color: var(--green-3);
+}
+
+.feedback-above.correct {
   color: var(--green-3);
 }
 
@@ -623,8 +649,16 @@ main {
   color: var(--red-3);
 }
 
+.feedback-above.incorrect {
+  color: var(--red-3);
+}
+
 .feedback.neutral {
   background-color: rgba(33, 33, 33, 0.2);
+  color: var(--gray-3);
+}
+
+.feedback-above.neutral {
   color: var(--gray-3);
 }
 
@@ -802,6 +836,15 @@ main {
     width: 90%;
     bottom: 6%;
     padding: var(--spacing-sm);
+  }
+  
+  .feedback-container {
+    bottom: calc(6% + 70px);
+    width: 90%;
+  }
+  
+  .feedback-above {
+    font-size: 0.9rem;
   }
 }
 
