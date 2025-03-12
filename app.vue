@@ -19,43 +19,41 @@
         <!-- Game indicators and input over the map -->
         <div v-if="isGameActive" class="game-info">
           <div class="timer">Time: {{ formatTime(timeElapsed) }}</div>
+          <button 
+            @click="skipCountry" 
+            class="btn btn-secondary skip-btn"
+            title="Skip this country (no penalty)"
+          >
+            Skip
+          </button>
         </div>
         
         <!-- Answer input inside map container -->
         <div v-if="isGameActive" class="answer-popup">
-          <div class="input-group">
-            <div class="autocomplete">
+          <div class="autocomplete">
+            <div class="input-wrapper">
               <input 
+                ref="inputRef"
                 v-model="userAnswer" 
-                @input="updateSuggestions"
+                @input="updateAutocomplete"
                 @keyup.enter="checkAnswer"
-                @keyup.down="navigateSuggestion(1)"
-                @keyup.up="navigateSuggestion(-1)"
-                placeholder="Type country name..."
+                @keyup.tab.prevent="acceptAutocomplete"
+                @keyup.right="acceptAutocomplete"
+                placeholder="Start typing a country name..."
                 class="answer-input"
                 :disabled="!isGameActive"
                 autofocus
               />
-              <div v-if="countrySuggestions.length > 0 && isGameActive" class="suggestions">
-                <div 
-                  v-for="(suggestion, index) in countrySuggestions" 
-                  :key="index"
-                  @click="selectSuggestion(suggestion)"
-                  class="suggestion-item"
-                  :class="{ 'suggestion-active': index === activeSuggestionIndex }"
-                >
-                  {{ suggestion.charAt(0).toUpperCase() + suggestion.slice(1) }}
-                </div>
-              </div>
+              <input 
+                type="text" 
+                :value="autocompleteText" 
+                class="autocomplete-suggestion"
+                disabled
+                aria-hidden="true"
+              />
             </div>
-            <button 
-              @click="skipCountry" 
-              class="btn btn-secondary skip-btn"
-              title="Skip this country (no penalty)"
-            >
-              Skip
-            </button>
           </div>
+          
           <div v-if="feedback" class="feedback" :class="feedbackClass">
             {{ feedback }}
           </div>
@@ -136,8 +134,8 @@ const currentCountry = ref(null);
 const countries = ref([]);
 const correctAnswers = ref([]);
 const currentCountryAttempts = ref(0); // Track attempts for the current country
-const countrySuggestions = ref([]); // Dropdown suggestions
-const activeSuggestionIndex = ref(-1); // Index of the active suggestion
+const autocompleteText = ref(''); // Inline autocomplete suggestion
+const inputRef = ref(null); // Reference to the input element
 const showGameSummary = ref(false); // Control the end game popup
 const countryStats = ref({}); // Track attempts per country
 const countryTimes = ref({}); // Track time spent on each country in seconds
@@ -302,9 +300,6 @@ function checkAnswer() {
     } else {
       selectRandomCountry(); // Pick a new country
     }
-    
-    // Clear suggestion dropdown
-    countrySuggestions.value = [];
   } else {
     currentCountryAttempts.value++;
     
@@ -312,7 +307,9 @@ function checkAnswer() {
     feedbackClass.value = 'incorrect';
   }
   
+  // Clear input and autocomplete
   userAnswer.value = '';
+  autocompleteText.value = '';
   
   // Clear feedback after 2 seconds
   setTimeout(() => {
@@ -320,11 +317,10 @@ function checkAnswer() {
   }, 2000);
 }
 
-// Update suggestions based on input
-function updateSuggestions() {
+// Update autocomplete suggestion based on input
+function updateAutocomplete() {
   if (!currentCountry.value || !isGameActive.value || userAnswer.value.length < 1) {
-    countrySuggestions.value = [];
-    activeSuggestionIndex.value = -1;
+    autocompleteText.value = '';
     return;
   }
   
@@ -337,37 +333,33 @@ function updateSuggestions() {
     country.alternatives.forEach(alt => allCountryNames.push(alt));
   });
   
-  // Filter suggestions based on input
-  countrySuggestions.value = allCountryNames.filter(name => 
+  // Find a match that starts with the input
+  const match = allCountryNames.find(name => 
     name.toLowerCase().startsWith(input)
   );
   
-  activeSuggestionIndex.value = -1;
-}
-
-// Navigate through suggestions with arrow keys
-function navigateSuggestion(direction) {
-  if (countrySuggestions.value.length === 0) return;
-  
-  const newIndex = activeSuggestionIndex.value + direction;
-  
-  if (newIndex >= countrySuggestions.value.length) {
-    activeSuggestionIndex.value = 0;
-  } else if (newIndex < 0) {
-    activeSuggestionIndex.value = countrySuggestions.value.length - 1;
+  if (match) {
+    // Set autocomplete text to the full suggestion
+    // This will show in the background of the input
+    autocompleteText.value = match;
   } else {
-    activeSuggestionIndex.value = newIndex;
+    autocompleteText.value = '';
   }
-  
-  // Update the input with the selected suggestion
-  userAnswer.value = countrySuggestions.value[activeSuggestionIndex.value];
 }
 
-// Select a suggestion from the dropdown
-function selectSuggestion(suggestion) {
-  userAnswer.value = suggestion;
-  countrySuggestions.value = [];
-  checkAnswer();
+// Accept the autocomplete suggestion
+function acceptAutocomplete() {
+  if (autocompleteText.value && autocompleteText.value.toLowerCase().startsWith(userAnswer.value.toLowerCase())) {
+    userAnswer.value = autocompleteText.value;
+    
+    // Position cursor at the end of the input
+    setTimeout(() => {
+      if (inputRef.value) {
+        inputRef.value.selectionStart = userAnswer.value.length;
+        inputRef.value.selectionEnd = userAnswer.value.length;
+      }
+    }, 0);
+  }
 }
 
 // Skip current country without penalty
@@ -393,6 +385,10 @@ function skipCountry() {
   // Move to the next country
   correctAnswers.value.push(currentCountry.value);
   selectRandomCountry();
+  
+  // Clear input and autocomplete
+  userAnswer.value = '';
+  autocompleteText.value = '';
   
   // Clear feedback after 2 seconds
   setTimeout(() => {
@@ -502,6 +498,21 @@ main {
   backdrop-filter: blur(4px);
 }
 
+.skip-btn {
+  font-weight: bold;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--color-secondary, #ff5722);
+  transition: all 0.2s ease;
+}
+
+.skip-btn:hover {
+  background-color: var(--color-secondary, #ff5722);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
 /* Map container */
 .map-container {
   flex: 1;
@@ -540,24 +551,37 @@ main {
   z-index: 5;
 }
 
-.input-group {
+.answer-popup {
   display: flex;
-  gap: var(--spacing-sm);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
 .autocomplete {
   position: relative;
-  flex-grow: 1;
+  width: 100%;
+  max-width: 500px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .answer-input {
+  position: relative;
   width: 100%;
   padding: var(--spacing-md);
   font-size: 1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  background: transparent;
+  z-index: 2;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .answer-input:focus {
@@ -566,34 +590,19 @@ main {
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
 }
 
-.skip-btn {
-  flex-shrink: 0;
-}
-
-/* Suggestion dropdown */
-.suggestions {
+.autocomplete-suggestion {
   position: absolute;
-  top: 100%;
+  top: 0;
   left: 0;
   width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  box-shadow: var(--shadow-md);
-  z-index: 20;
-}
-
-.suggestion-item {
   padding: var(--spacing-md);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.suggestion-item:hover,
-.suggestion-active {
-  background-color: var(--gray-8);
+  font-size: 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-secondary, #666);
+  background-color: var(--color-surface);
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Feedback messages */
@@ -768,11 +777,17 @@ main {
   }
   
   .timer, .score {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
   
-  .answer-input {
+  .skip-btn {
+    font-size: 0.9rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .answer-input, .autocomplete-suggestion {
     padding: var(--spacing-sm);
+    font-size: 0.9rem;
   }
   
   .btn {
