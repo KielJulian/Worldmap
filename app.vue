@@ -1,4 +1,5 @@
 <template>
+  <Analytics />
   <div class="app-container">
     <header>
       <h1>World Map Quiz</h1>
@@ -109,7 +110,7 @@
 <script setup>
 import { ref, onUnmounted, onMounted, watchEffect } from 'vue';
 import WorldMap from './components/WorldMap.vue';
-import { inject } from '@vercel/analytics';
+import { Analytics } from '@vercel/analytics/nuxt';
 
 // Add a meta tag to prevent search engines from indexing the site during development
 useHead({
