@@ -547,7 +547,7 @@ main {
   width: 80%;
   max-width: 600px;
   padding: var(--spacing-md);
-  background-color: var(--color-surface);
+  background-color: transparent;
   border-radius: var(--border-radius-md);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   z-index: 5;
@@ -602,7 +602,7 @@ main {
   border: 1px solid transparent;
   border-radius: var(--border-radius-sm);
   color: var(--color-text-secondary-light, #666);
-  background-color: var(--color-surface);
+  background-color: transparent;
   z-index: 1;
   pointer-events: none;
 }
