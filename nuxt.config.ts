@@ -9,5 +9,5 @@ export default defineNuxtConfig({
       ]
     }
   },
-  modules: ['@vercel/analytics/nuxt']
+  modules: ['nuxt-vercel-analytics']
 })
