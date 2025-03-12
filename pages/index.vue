@@ -47,11 +47,14 @@
                 autocorrect="off"
                 autocapitalize="none"
                 spellcheck="false"
-                inputmode="text"
+                inputmode="verbatim"
+                enterkeyhint="done"
+                data-lpignore="true"
                 data-form-type="other"
-                x-webkit-speech="false"
-                webkitAutocorrect="off"
-                mozAutocorrect="off"
+                aria-autocomplete="none"
+                autofill="off"
+                x-autocompletetype="off" 
+                results="0"
                 autofocus
               />
               <input 
@@ -272,7 +275,7 @@ function initCountryMap() {
 function checkAnswer() {
   if (!isGameActive.value || !currentCountry.value) return;
   
-  // Convert to lowercase and trim whitespace for comparison
+  // Convert to lowercase, normalize and trim whitespace for comparison
   const answer = userAnswer.value.toLowerCase().trim();
   
   if (answer.length === 0) return;
@@ -293,8 +296,16 @@ function checkAnswer() {
   }
   countryStats.value[currentCountry.value]++;
   
+  // Normalize the input and potential answers to handle autocorrect issues
+  // This removes special characters, apostrophes, and simplifies comparison
+  const normalizedAnswer = answer.replace(/['-\s]/g, '').toLowerCase();
+  const normalizedValidAnswers = allValidAnswers.map(a => a.replace(/['-\s]/g, '').toLowerCase());
+  
   // Check if the answer matches the name or any alternative
-  const correct = allValidAnswers.includes(answer);
+  // First try exact match, then try normalized match to be more forgiving
+  const exactMatch = allValidAnswers.includes(answer);
+  const normalizedMatch = normalizedValidAnswers.includes(normalizedAnswer);
+  const correct = exactMatch || normalizedMatch;
   
   if (correct) {
     // Calculate time spent on this country
@@ -451,6 +462,24 @@ onMounted(() => {
   // Handle screen orientation changes on mobile
   window.addEventListener('resize', handleResize);
   handleResize();
+  
+  // Aggressively disable autocorrect on the input field
+  setTimeout(() => {
+    if (inputRef.value) {
+      // Force disable autocorrect via JavaScript
+      inputRef.value.setAttribute('autocomplete', 'off');
+      inputRef.value.setAttribute('autocorrect', 'off');
+      inputRef.value.setAttribute('autocapitalize', 'none');
+      inputRef.value.setAttribute('spellcheck', 'false');
+      
+      // Add event listener to prevent autocorrect
+      inputRef.value.addEventListener('beforeinput', (e) => {
+        if (e.inputType === 'insertReplacementText') {
+          e.preventDefault();
+        }
+      });
+    }
+  }, 100);
 });
 
 // Handle window resize events
