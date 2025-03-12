@@ -397,7 +397,7 @@ function isTouchDevice() {
          (navigator.msMaxTouchPoints > 0);
 }
 
-// Skip current country without penalty
+// Skip current country with a time penalty of +30 seconds
 function skipCountry() {
   if (!isGameActive.value || !currentCountry.value) return;
   
@@ -408,13 +408,13 @@ function skipCountry() {
   if (!countryStats.value[currentCountry.value]) {
     countryStats.value[currentCountry.value] = 0;
   }
-  countryStats.value[currentCountry.value] += 5; // Counting as 5 attempts for a skip
+  countryStats.value[currentCountry.value] += 1; // Count as 1 attempt
   
-  // Record time spent
-  const timeSpent = timeElapsed.value - currentCountryStartTime.value;
+  // Record time spent plus 30 seconds penalty
+  const timeSpent = timeElapsed.value - currentCountryStartTime.value + 30; // Add 30 second penalty
   countryTimes.value[currentCountry.value] = timeSpent;
   
-  feedback.value = `Skipped. The answer was "${correctName.charAt(0).toUpperCase() + correctName.slice(1)}".`;
+  feedback.value = `Skipped (+30s). The answer was "${correctName.charAt(0).toUpperCase() + correctName.slice(1)}".`;
   feedbackClass.value = 'neutral';
   
   // Move to the next country
