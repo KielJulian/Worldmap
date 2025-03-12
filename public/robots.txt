@@ -8,6 +8,7 @@ Disallow: /
 # User-agent: *
 # Allow: /
 # Allow: /svg/world-map.svg
+# Allow: /svg/worldmap.svg
 # Allow: /favicon.ico
 # Disallow: /assets/
 # Disallow: /components/
