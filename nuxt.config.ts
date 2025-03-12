@@ -8,5 +8,6 @@ export default defineNuxtConfig({
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }
       ]
     }
-  }
+  },
+  modules: ['@vercel/analytics/nuxt']
 })

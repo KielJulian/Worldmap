@@ -109,6 +109,7 @@
 <script setup>
 import { ref, onUnmounted, onMounted, watchEffect } from 'vue';
 import WorldMap from './components/WorldMap.vue';
+import { inject } from '@vercel/analytics';
 
 // Add a meta tag to prevent search engines from indexing the site during development
 useHead({
@@ -415,6 +416,9 @@ function handleResize() {
   
   // No longer focusing on countries for performance
 }
+
+// Initialize Vercel Analytics
+inject();
 
 // Clean up on component unmount
 onUnmounted(() => {
