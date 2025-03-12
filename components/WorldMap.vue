@@ -316,6 +316,15 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+@media (max-width: 768px) {
+  .map-svg-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 svg {
